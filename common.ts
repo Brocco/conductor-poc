@@ -1,5 +1,5 @@
 export interface ConductorRequest {
-  id: number;
+  id?: number;
   command: string;
   arguments?: object;
   options?: object;
@@ -8,7 +8,7 @@ export interface ConductorRequest {
 
 export interface ConductorResponse {
   id: number;
-  completed: boolean;
+  completed?: boolean;
   error?: any;
   result?: object;
 }

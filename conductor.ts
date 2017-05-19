@@ -8,12 +8,12 @@ import { ConductorRequest, ConductorResponse } from './common';
 export class Conductor {
   private _lastId = 0;
   private _requestMap = new Map<number, Observer<any>>();
-  private _requestQueue = new Set<ConductorRequest>();
+  private _requestQueue = new Set<{request: ConductorRequest; observer: Observer<ConductorResponse>;}>();
   private _connection: net.Socket;
   private _connected = false;
   private _connecting = false;
 
-  constructor(private _port: number, private _host: string = 'localhost') {
+  constructor(private _port: number, private _host?: string) {
     this._connect();
   }
 
@@ -28,20 +28,18 @@ export class Conductor {
   }
 
   private _queueRequest<T extends ConductorRequest, U extends ConductorResponse>(request: T, observer: Observer<U>) {
-    this._requestQueue.add(request);
+    this._requestQueue.add({ request, observer });
   }
 
   private _processQueuedRequests() {
-    this._requestQueue.forEach((request) => {
-      const observer = this._requestMap.get(request.id);
+    this._requestQueue.forEach(({request, observer}) => {
       this._send(request, observer);
     });
-    this._requestMap.clear();
+    this._requestQueue.clear();
   }
 
   private _send<T extends ConductorRequest, U extends ConductorResponse>(request: T, observer: Observer<U>) {
     request.id = this._lastId++;
-
     this._requestMap.set(request.id, observer);
 
     if (!this._connected) {
@@ -58,20 +56,31 @@ export class Conductor {
       return;
     }
 
-    this._connection = net.createConnection(this._port, this._host, (socket: net.Socket) => {
+    let options: any = {port: this._port};
+    if (this._host) {
+      options = {... {host: this._host}};
+    }
+
+    this._connection = net.createConnection(options, () => {
+      console.log('connecting...');
       this._connecting = true;
-      socket.on('data', (data: Buffer) => {
-        this._handleResult(JSON.parse(data.toString('utf-8')));
-      });
-      socket.on('connect', () => {
-        this._connecting = false;
-        this._connected = true;
-        this._processQueuedRequests();
-      });
-      socket.on('close', () => {
-        this._connected = false;
-      });
-    })
+    });
+    this._connection.on('data', (data: Buffer) => {
+      const response = JSON.parse(data.toString('utf-8'))
+      console.log('data...', response);
+      this._handleResult(response);
+    });
+    this._connection.on('connect', () => {
+      console.log('connected');
+      this._connecting = false;
+      this._connected = true;
+      this._processQueuedRequests();
+    });
+    this._connection.on('close', () => {
+      console.log('closed');
+      this._connected = false;
+    });
+    this._connection.on('error', (err: Error) => console.log('ERROR', err));
   }
 
   private _handleResult(response: ConductorResponse): void {
