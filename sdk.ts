@@ -15,7 +15,7 @@ orchestra.registerCommand('build', (req) => {
   return Observable.interval(250)
     .map(idx => ({
       id: id,
-      result: new Date(),
+      result: (new Date()).toISOString(),
       completed: idx === (numToTake - 1)
     }))
     .do(res => console.log('result', res))

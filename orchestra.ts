@@ -31,7 +31,7 @@ class Orchestra {
     if (!handler) {
       const response: ConductorResponse = {
         id: request.id,
-        error: `Command ${request.command} is not supported`
+        error: {msg:`Command ${request.command} is not supported`}
       }
       return Observable.of(response);
     }
@@ -59,7 +59,7 @@ function startServer(orchestra: Orchestra) {
 
   server.listen(12345, 'localhost', () => {
     const address = server.address();
-    console.log('write to lock file: ', `${address.address}:${address.port}`)
+    console.log('running: ', `${address.address}:${address.port}`)
   });
 }
 

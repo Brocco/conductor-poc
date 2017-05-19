@@ -1,14 +1,20 @@
-export interface ConductorRequest {
-  id?: number;
-  command: string;
-  arguments?: object;
-  options?: object;
-  request: object;
+export type JsonValue = boolean | number | string | JsonObject | JsonArray;
+export interface JsonArray extends Array<JsonValue> {}
+export interface JsonObject {
+  [key: string]: JsonValue;
 }
 
-export interface ConductorResponse {
+export interface ConductorRequest extends JsonObject {
+  id?: number;
+  command: string;
+  arguments?: JsonObject;
+  options?: JsonObject;
+  request: JsonObject;
+}
+
+export interface ConductorResponse extends JsonObject {
   id: number;
   completed?: boolean;
-  error?: any;
-  result?: object;
+  error?: JsonObject;
+  result?: JsonValue;
 }

@@ -56,9 +56,9 @@ export class Conductor {
       return;
     }
 
-    let options: any = {port: this._port};
+    let options: any = { port: this._port };
     if (this._host) {
-      options = {... {host: this._host}};
+      options = {...options, ...{ host: this._host }};
     }
 
     this._connection = net.createConnection(options, () => {
