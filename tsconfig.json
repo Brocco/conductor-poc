@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "target": "es6",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017"
+    ]
+  }
+}

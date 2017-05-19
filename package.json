@@ -1,0 +1,21 @@
+{
+  "name": "conductor-poc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "prestart": "tsc",
+    "start": "node ./dist/orchestra & node ./dist/cli"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^5.4.0",
+    "typescript": "^2.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.18"
+  }
+}
